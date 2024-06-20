@@ -7,7 +7,7 @@
                 <button type="button" @click="getPictureData">Fetch me a picture of the day!</button>
             </div>
 
-            <div v-if="state.loaded">
+            <div v-if="state.loaded"> {{ state.pictureData }}
             </div>
             <div v-else>No picture here, Oh no 😢 </div>
 
@@ -18,9 +18,10 @@
 </template>
 <script>
 import axios from "axios"
-import { ref, reactive } from 'vue'
+import { reactive } from 'vue'
 
-const getPicture = ref('')
+axios.defaults.headers['X-API-KEY'] = 'key_here_:D';
+
 
 export default {
     components: {},
@@ -28,11 +29,29 @@ export default {
 
         const state = reactive({
             loaded: false,
+            todayDate: '2024-06-20',
             pictureData: '',
         })
 
+        function getPictureData() {
+            getPictures()
+        }
+
+        function getPictures() {
+            axios.get(`api/apod?date=${state.todayDate}`)
+                .then(response => {
+                    state.pictureData = response.data
+                    state.loaded = true
+                })
+                .catch(err => {
+                    console.error(err);
+                });
+
+        }
+
         return {
-            state
+            state,
+            getPictureData
         }
 
     }
