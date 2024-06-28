@@ -3,24 +3,17 @@
     <body>
         <div class="picture-search">
             <h1> <strong>Welcome weary traveler and behold, as teh marvels unfold</strong> </h1>
-            <div class="toggleToSearch">
-                <button type="button" @click="getPictureData">Fetch me a picture of the day!</button>
-            </div>
+
 
             <div v-if="state.loaded">
-                <div class="picture-data">
-                    <h1><strong>{{ state.pictureData.title }}</strong></h1>
-                    <p>Date: {{ state.pictureData.date }}</p>
-                    <img :src="state.pictureData.url" alt="Normal picture no hd">
-                    <p v-if="state.pictureData.copyright">Copyright:{{ state.pictureData.copyright }}</p>
-                    <p>
-                        <a :href="state.pictureData.hdurl" target="_blank">Hd version of teh picta</a>
-                    </p>
-                    <div class="picture-explanation"> Description: {{ state.pictureData.explanation }}</div>
-
-                </div>
+                <PictureCard :pictureData="state.pictureData" />
             </div>
-            <div v-else>No picture here, Oh no 😢 </div>
+            <div class='no-data' v-else>
+                <div class="toggleToSearch">
+                    <button type="button" @click="getPictureData">Fetch me a picture of the day!</button>
+                </div>
+                No picture here yet, Oh no 😢
+            </div>
 
         </div>
     </body>
@@ -30,22 +23,30 @@
 <script>
 import axios from "axios"
 import { reactive } from 'vue'
+import PictureCard from "./PictureCard.vue";
 
-axios.defaults.headers['X-API-KEY'] = 'your_API_key_here_;P';
+axios.defaults.headers['X-API-KEY'] = 'api_key_here';
 
 
 export default {
-    components: {},
+    components: { PictureCard },
     setup() {
 
         const state = reactive({
             loaded: false,
-            todayDate: '2024-06-20',
+            todayDate: '',
             pictureData: '',
         })
 
         function getPictureData() {
+            state.todayDate = getCurrentDate()
             getPictures()
+        }
+
+        function getCurrentDate() {
+            let currentDate = new Date().toJSON().slice(0, 10);
+            return currentDate;
+
         }
 
         function getPictures() {
@@ -70,11 +71,15 @@ export default {
 </script>
 
 <style scoped>
-.picture-data h1 {
+.picture-container h1 {
     color: #8B008B;
 }
 
 .toggleToSearch {
     font-family: Verdana, sans-serif;
+}
+
+.no-data {
+    color: #6b5f6b;
 }
 </style>
